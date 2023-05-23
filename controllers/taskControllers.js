@@ -135,8 +135,29 @@ the latest data will be at the top.
 */
 
 const getallTask = async (req, res) => {
-
     //Write your code here.
+     try {
+    const { status } = req.query;
+    const filter = status ? { status } : {};
+
+    let tasks;
+    if (req.user.isAdmin) {
+      tasks = await Task.find(filter).sort({ createdAt: -1 });
+    } else {
+      tasks = await Task.find({ creator_id: req.user._id, ...filter }).sort({ createdAt: -1 });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: tasks
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'fail',
+      message: 'Something went wrong',
+      error: error.message
+    });
+  }
 }
 
 
