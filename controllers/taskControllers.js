@@ -136,7 +136,7 @@ the latest data will be at the top.
 
 const getallTask = async (req, res) => {
     //Write your code here.
-     try {
+   try {
     const { status } = req.query;
     const filter = status ? { status } : {};
 
@@ -158,7 +158,7 @@ const getallTask = async (req, res) => {
       error: error.message
     });
   }
-}
+};
 
 
 module.exports = { createTask, getdetailTask, updateTask, deleteTask, getallTask };
