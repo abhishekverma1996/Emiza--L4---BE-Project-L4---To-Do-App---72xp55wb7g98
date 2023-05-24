@@ -136,26 +136,32 @@ the latest data will be at the top.
 
 const getallTask = async (req, res) => {
     //Write your code here.
-   try {
-    const { status } = req.query;
-    const filter = status ? { status } : {};
+    const { token } = req.body;
+  try {
+    const decodedToken = jwt.verify(token, JWT_SECRET);
+    const user = await Users.findById(decodedToken.userId);
+    let tasks = [];
 
-    let tasks;
-    if (req.user.isAdmin) {
-      tasks = await Tasks.find(filter).sort({ createdAt: -1 });
+    if (user.role === "admin") {
+      tasks = await Tasks.find().sort({ createdAt: -1 });
     } else {
-      tasks = await Tasks.find({ creator_id: req.user._id, ...filter }).sort({ createdAt: -1 });
+      tasks = await Tasks.find({ creator_id: user._id }).sort({
+        createdAt: -1,
+      });
     }
 
+    const { status } = req.query;
+    if (status) {
+      tasks = tasks.filter((task) => task.status === status);
+    }
     res.status(200).json({
-      status: 'success',
-      data: tasks
+      status: "success",
+      data: tasks,
     });
   } catch (error) {
-    res.status(500).json({
-      status: 'fail',
-      message: 'Something went wrong',
-      error: error.message
+    return res.status(404).json({
+      status: "error",
+      message: "User not found",
     });
   }
 };
