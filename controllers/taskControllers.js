@@ -142,9 +142,9 @@ const getallTask = async (req, res) => {
 
     let tasks;
     if (req.user.isAdmin) {
-      tasks = await Task.find(filter).sort({ createdAt: -1 });
+      tasks = await Tasks.find(filter).sort({ createdAt: -1 });
     } else {
-      tasks = await Task.find({ creator_id: req.user._id, ...filter }).sort({ createdAt: -1 });
+      tasks = await Tasks.find({ creator_id: req.user._id, ...filter }).sort({ createdAt: -1 });
     }
 
     res.status(200).json({
